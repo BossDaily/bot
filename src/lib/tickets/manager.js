@@ -25,6 +25,12 @@ const {
 	encrypt,
 } = new Cryptr(process.env.ENCRYPTION_KEY);
 
+const { sftp } = require('../../index');
+const { discordTranscripts } = require('discord-html-transcripts');
+const logger = require('lib/logger');
+
+const fs = require('fs');
+
 /**
  * @typedef {import('@prisma/client').Category &
  * 	{guild: import('@prisma/client').Guild} &
@@ -1167,6 +1173,15 @@ module.exports = class TicketManager {
 			},
 			where: { id: ticket.id },
 		});
+
+		const htmlTranscript = await discordTranscripts
+			.createTranscript(channel, { returnType: 'buffer' })
+			.then(() => logger.info(`Transcript created for ticket ${ticket.id}`))
+			.catch(error => {
+				logger.error(error);
+			});
+
+		fs.writeFileSync(`transcripts/transcript-${channel.id}.html`, htmlTranscript);
 
 		if (channel?.deletable) {
 			const member = closedBy ? channel.guild.members.cache.get(closedBy) : null;
