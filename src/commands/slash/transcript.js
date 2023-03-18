@@ -1,9 +1,13 @@
 const { SlashCommand } = require('@eartharoid/dbf');
-const { ApplicationCommandOptionType, EmbedBuilder, ActionRowBuilder } = require('discord.js');
+const {
+	ApplicationCommandOptionType, EmbedBuilder, ActionRowBuilder,
+} = require('discord.js');
 const fs = require('fs');
 const { join } = require('path');
 const Mustache = require('mustache');
-const { AttachmentBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const {
+	AttachmentBuilder, ButtonBuilder, ButtonStyle,
+} = require('discord.js');
 const Cryptr = require('cryptr');
 const { decrypt } = new Cryptr(process.env.ENCRYPTION_KEY);
 
