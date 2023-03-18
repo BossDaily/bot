@@ -23,6 +23,8 @@
 
 /* eslint-disable no-console */
 
+const sftpClient = require('sftp')
+
 const pkg = require('../package.json');
 const banner = require('./lib/banner');
 console.log(banner(pkg.version)); // print big title
@@ -68,7 +70,18 @@ process.on('unhandledRejection', error => {
 	log.error(error);
 });
 
+export const sftp = new sftpClient();
+
+sftp.connect({
+	host: `${process.env.SFTP_HOST}`,
+	password: `${process.env.SFTP_PASSWORD}`,
+	port: 2022,
+	username: `${process.env.SFTP_USERNAME}`,
+});
+
+
 const client = new Client(config, log);
 client.login().then(() => {
 	http(client);
 });
+
