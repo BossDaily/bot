@@ -1,4 +1,4 @@
-import { Client } from 'basic-sftp';
+const { Client } = require('basic-sftp');
 
-export class sftpClient extends Client {
-}
+module.exports = class sftpClient extends Client {
+};
