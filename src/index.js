@@ -72,7 +72,7 @@ process.on('unhandledRejection', error => {
 
 const sftp = new sftpClient();
 
-module.exports = sftp;
+
 
 sftp.connect({
 	host: `${process.env.SFTP_HOST}`,
@@ -81,7 +81,7 @@ sftp.connect({
 	username: `${process.env.SFTP_USERNAME}`,
 }).then(() => log.info('Connected to SFTP server'));
 
-
+module.exports = sftp;
 
 const client = new Client(config, log);
 client.login().then(() => {
