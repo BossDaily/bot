@@ -24,7 +24,7 @@ const {
 	decrypt, encrypt,
 } = new Cryptr(process.env.ENCRYPTION_KEY);
 
-const  sftp  = require('../../index');
+const sftp = require('../../index');
 const discordTranscripts = require('discord-html-transcripts');
 const fs = require('fs');
 
@@ -1318,26 +1318,12 @@ module.exports = class TicketManager {
 			.then(file => fs.writeFileSync(
 				`transcripts/transcript-${channel.id}.html`,
 				file,
-			))
+			)).then(() => this.client.log.info(`Created file for Transcript at transcripts/transcript-${channel.id}.html`))
 			.catch(error => {
 				this.client.log.error(error);
 			});
 
-
-
-
-
-
-
-		this.client.log.info(
-			`Created file for Transcript at transcripts/transcript-${channel.id}.html`,
-		);
-
-		await sftp
-			.uploadFile(
-				`transcripts/transcript-${channel.id}.html`,
-				`public/tickets/transcript-${channel.id}.html`,
-			)
+		await this.client.sftp.uploadFile(`transcripts/transcript-${channel.id}.html`, `public/tickets/transcript-${channel.id}.html`)
 			.then(() =>
 				fs.unlink(`transcripts/transcript-${channel.id}.html`, err => {
 					if (err) throw err;
