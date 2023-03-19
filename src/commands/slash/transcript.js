@@ -181,13 +181,18 @@ module.exports = class TranscriptSlashCommand extends SlashCommand {
 			},
 			{
 				inline: true,
-				name: 'Direct Link',
-				value: `[Here is the link](https://download.comparatorcraftsmp.net/tickets/transcript-${ticket.id}.html)`,
+				name: 'Transcript URL',
+				value: `[Link to Transcript](${process.env.TICKETS_URL}/tickets/transcript-${ticket.id}.html)`,
 			},
 		]);
 
-		const row = new ActionRowBuilder()
-			.addComponents(new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel('Link to the transcript').setURL(`https://download.comparatorcraftsmp.net/tickets/transcript-${ticket.id}.html`));
+		const row =
+          new ActionRowBuilder().addComponents(
+          	new ButtonBuilder()
+          		.setStyle(ButtonStyle.Link)
+          		.setLabel('Link to Ticket Transcript')
+          		.setURL(`${process.env.TICKETS_URL}/tickets/transcript-${ticket.id}.html`),
+          );
 
 		await interaction.editReply({
 			components: [row],
