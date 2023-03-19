@@ -12,6 +12,8 @@ const YAML = require('yaml');
 const TicketManager = require('./lib/tickets/manager');
 const sqliteMiddleware = require('./lib/middleware/prisma-sqlite');
 
+const sftpClient = require('./sftp');
+
 module.exports = class Client extends FrameworkClient {
 	constructor(config, log) {
 		super({
@@ -31,6 +33,8 @@ module.exports = class Client extends FrameworkClient {
 			],
 		});
 
+
+
 		const locales = {};
 		fs.readdirSync(join(__dirname, 'i18n'))
 			.filter(file => file.endsWith('.yml'))
@@ -47,6 +51,7 @@ module.exports = class Client extends FrameworkClient {
 		this.config = config;
 		this.log = log;
 		this.supers = (process.env.SUPER ?? '').split(',');
+		this.sftp = new sftpClient();
 	}
 
 	async login(token) {
@@ -66,4 +71,6 @@ module.exports = class Client extends FrameworkClient {
 		await this.prisma.$disconnect();
 		return super.destroy();
 	}
+
+
 };
