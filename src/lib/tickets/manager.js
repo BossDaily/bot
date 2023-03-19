@@ -1382,7 +1382,7 @@ module.exports = class TicketManager {
 						{
 							inline: true,
 							name: 'Ticket Creator',
-							value: `${ticketOwner.tag} - ${ticketOwner.id}}`,
+							value: `${ticketOwner.user.tag} - ${ticketOwner.id}`,
 						},
 						{
 							inline: true,
@@ -1469,7 +1469,7 @@ module.exports = class TicketManager {
 
 				await guildChannel.send({
 					components: [row],
-					embeds: [embed],
+					embeds: [embed.setTitle(`${ticket.category.name} #${ticket.number} - ${ticket.id} information`).setDescription(`Here is some information about ${ticket.category.name} #${ticket.number}`)],
 				});
 			}
 		} catch (error) {
