@@ -1303,6 +1303,8 @@ module.exports = class TicketManager {
 			data.pinnedMessageIds = [...pinned.keys()];
 		}
 
+
+
 		ticket = await this.client.prisma.ticket.update({
 			data,
 			include: {
@@ -1312,6 +1314,9 @@ module.exports = class TicketManager {
 			},
 			where: { id: ticket.id },
 		});
+		const guild = this.client.guilds.cache.get(ticket.guildId);
+		const guildChannel = await guild.channels.fetch(process.env.TRANSCRIPTS_CHANNEL);
+
 
 		const htmlTranscript = await discordTranscripts
 			.createTranscript(channel, { returnType: 'buffer' })
@@ -1322,6 +1327,7 @@ module.exports = class TicketManager {
 			.catch(error => {
 				this.client.log.error(error);
 			});
+
 
 		await this.client.sftp.uploadFile(`transcripts/transcript-${channel.id}.html`, `public/tickets/transcript-${channel.id}.html`)
 			.then(() =>
@@ -1356,6 +1362,8 @@ module.exports = class TicketManager {
 			});
 		}
 
+		const ticketOwner = await guild.members.fetch(ticket.createdById);
+
 		try {
 			const creator = await channel?.guild.members.fetch(ticket.createdById);
 			if (creator) {
@@ -1370,6 +1378,16 @@ module.exports = class TicketManager {
 							inline: true,
 							name: getMessage('dm.closed.fields.ticket'),
 							value: `${ticket.category.name} **#${ticket.number}**`,
+						},
+						{
+							inline: true,
+							name: 'Ticket Creator',
+							value: `${ticketOwner.tag} - ${ticketOwner.id}}`,
+						},
+						{
+							inline: true,
+							name: 'Transcript URL',
+							value: `[Link to Transcript](${process.env.TICKETS_URL}/tickets/transcript-${channel.id}.html)`,
 						},
 					]);
 				if (ticket.topic) {
@@ -1435,8 +1453,24 @@ module.exports = class TicketManager {
 						getMessage('dm.closed.archived', { guild: channel.guild.name }),
 					);
 				}
+				const row =
+          new ActionRowBuilder().addComponents(
+          	new ButtonBuilder()
+          		.setStyle(ButtonStyle.Link)
+          		.setLabel('Link to Ticket Transcript')
+          		.setURL(`${process.env.TICKETS_URL}/tickets/transcript-${channel.id}.html`),
+          );
 
-				await creator.send({ embeds: [embed] });
+
+				await creator.send({
+					components: [row],
+					embeds: [embed],
+				});
+
+				await guildChannel.send({
+					components: [row],
+					embeds: [embed],
+				});
 			}
 		} catch (error) {
 			this.client.log.error(error);
