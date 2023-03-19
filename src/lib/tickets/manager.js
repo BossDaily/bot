@@ -1312,22 +1312,20 @@ module.exports = class TicketManager {
 			},
 			where: { id: ticket.id },
 		});
-		try {
-			const htmlTranscript = await discordTranscripts
-				.createTranscript(channel, { returnType: 'buffer' })
-				.then(() => this.client.log.info(`Transcript created for ticket ${ticket.id}`))
-				.catch(error => {
-					this.client.log.error(error);
-				});
-			if (htmlTranscript) {
-				fs.writeFileSync(
-					`transcripts/transcript-${channel.id}.html`,
-					htmlTranscript,
-				);
-			}
-		} catch (error) {
-			this.client.log.error(error);
-		}
+
+		const htmlTranscript = await discordTranscripts
+			.createTranscript(channel, { returnType: 'buffer' })
+			.then(file => fs.writeFileSync(
+				`transcripts/transcript-${channel.id}.html`,
+				file,
+			))
+			.catch(error => {
+				this.client.log.error(error);
+			});
+
+
+
+
 
 
 
