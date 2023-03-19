@@ -176,11 +176,6 @@ module.exports = class TranscriptSlashCommand extends SlashCommand {
 			},
 			{
 				inline: true,
-				name: 'Ticket Name',
-				value: ticket.archivedChannels[0].name,
-			},
-			{
-				inline: true,
 				name: 'Transcript URL',
 				value: `[Link to Transcript](${process.env.TICKETS_URL}/tickets/transcript-${ticket.id}.html)`,
 			},
