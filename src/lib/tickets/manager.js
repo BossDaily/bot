@@ -1216,7 +1216,7 @@ module.exports = class TicketManager {
 		const guildChannel = await guild.channels.fetch(process.env.TRANSCRIPTS_CHANNEL);
 
 
-		const htmlTranscript = await discordTranscripts
+		await discordTranscripts
 			.createTranscript(channel, { returnType: 'buffer' })
 			.then(file => fs.writeFileSync(
 				`transcripts/transcript-${channel.id}.html`,
@@ -1254,6 +1254,8 @@ module.exports = class TicketManager {
 			});
 		}
 
+		const ticketOwner = await guild.members.fetch(ticket.createdById);
+
 		try {
 			const creator = channel?.guild.members.cache.get(ticket.createdById);
 			if (creator) {
@@ -1268,6 +1270,16 @@ module.exports = class TicketManager {
 							inline: true,
 							name: getMessage('dm.closed.fields.ticket'),
 							value: `${ticket.category.name} **#${ticket.number}**`,
+						},
+						{
+							inline: true,
+							name: 'Ticket Creator',
+							value: `${ticketOwner.user.tag} - ${ticketOwner.id}`,
+						},
+						{
+							inline: true,
+							name: 'Transcript URL',
+							value: `[Link to Transcript](${process.env.TICKETS_URL}/tickets/transcript-${channel.id}.html)`,
 						},
 
 					]);
