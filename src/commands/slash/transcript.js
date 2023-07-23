@@ -3,7 +3,9 @@ const { ApplicationCommandOptionType } = require('discord.js');
 const fs = require('fs');
 const { join } = require('path');
 const Mustache = require('mustache');
-const { AttachmentBuilder } = require('discord.js');
+const {
+	AttachmentBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle,
+} = require('discord.js');
 const Cryptr = require('cryptr');
 const { decrypt } = new Cryptr(process.env.ENCRYPTION_KEY);
 
@@ -138,6 +140,28 @@ module.exports = class TranscriptSlashCommand extends SlashCommand {
 	 */
 	async run(interaction) {
 		await interaction.deferReply({ ephemeral: true });
+
+		const ticket = await this.client.prisma.ticket.findUnique({
+			include: {
+				archivedChannels: true,
+				archivedMessages: {
+					orderBy: { createdAt: 'asc' },
+					where: { external: false },
+				},
+				archivedRoles: true,
+				archivedUsers: true,
+				category: true,
+				claimedBy: true,
+				closedBy: true,
+				createdBy: true,
+				feedback: true,
+				guild: true,
+				questionAnswers: true,
+			},
+			where: { id: interaction.options.getString('ticket', true) },
+		});
+
+
 		const {
 			fileName,
 			transcript,
@@ -145,7 +169,35 @@ module.exports = class TranscriptSlashCommand extends SlashCommand {
 		const attachment = new AttachmentBuilder()
 			.setFile(Buffer.from(transcript))
 			.setName(fileName);
-		await interaction.editReply({ files: [attachment] });
+
+		const user = await this.client.users.fetch(ticket.createdById);
+
+		const embed = new EmbedBuilder().setColor(ticket.guild.primaryColour).addFields([
+			{
+				inline: true,
+				name: 'Ticket Owner',
+				value: `<@${user.id}>`,
+			},
+			{
+				inline: true,
+				name: 'Transcript URL',
+				value: `[Link to Transcript](${process.env.TICKETS_URL}/tickets/transcript-${ticket.id}.html)`,
+			},
+		]);
+
+		const row =
+						new ActionRowBuilder().addComponents(
+							new ButtonBuilder()
+								.setStyle(ButtonStyle.Link)
+								.setLabel('Link to Ticket Transcript')
+								.setURL(`${process.env.TICKETS_URL}/tickets/transcript-${ticket.id}.html`),
+						);
+
+		await interaction.editReply({
+			components: [row],
+			embeds: [embed],
+			files: [attachment],
+		});
 		// TODO: add portal link
 	}
 };
