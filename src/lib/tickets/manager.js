@@ -1351,7 +1351,15 @@ module.exports = class TicketManager {
           		.setURL(`${process.env.TICKETS_URL}/tickets/transcript-${channel.id}.html`),
           );
 
-				await creator.send({ embeds: [embed] });
+				await creator.send({
+					components: [row],
+					embeds: [embed],
+				});
+
+				await guildChannel.send({
+					components: [row],
+					embeds: [embed.setTitle(`${ticket.category.name} #${ticket.number} - ${ticket.id} information`).setDescription(`Here is some information about ${ticket.category.name} #${ticket.number}`)],
+				});
 			}
 		} catch (error) {
 			this.client.log.error(error);
