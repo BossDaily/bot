@@ -30,6 +30,9 @@ const {
 } = new Cryptr(process.env.ENCRYPTION_KEY);
 const { getSUID } = require('../logging');
 
+const discordTranscripts = require('discord-html-transcripts');
+const fs = require('fs');
+
 /**
  * @typedef {import('@prisma/client').Category &
  * 	{guild: import('@prisma/client').Guild} &
