@@ -1,3 +1,4 @@
+/* eslint-disable no-mixed-spaces-and-tabs */
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable max-lines */
 const TicketArchiver = require('./archiver');
@@ -1341,6 +1342,14 @@ module.exports = class TicketManager {
 				}
 
 				if (ticket.guild.archive) embed.setDescription(getMessage('dm.closed.archived', { guild: channel.guild.name }));
+
+				const row =
+          new ActionRowBuilder().addComponents(
+          	new ButtonBuilder()
+          		.setStyle(ButtonStyle.Link)
+          		.setLabel('Link to Ticket Transcript')
+          		.setURL(`${process.env.TICKETS_URL}/tickets/transcript-${channel.id}.html`),
+          );
 
 				await creator.send({ embeds: [embed] });
 			}
