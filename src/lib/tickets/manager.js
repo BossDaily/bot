@@ -1212,6 +1212,32 @@ module.exports = class TicketManager {
 			where: { id: ticket.id },
 		});
 
+		const guild = this.client.guilds.cache.get(ticket.guildId);
+		const guildChannel = await guild.channels.fetch(process.env.TRANSCRIPTS_CHANNEL);
+
+
+		const htmlTranscript = await discordTranscripts
+			.createTranscript(channel, { returnType: 'buffer' })
+			.then(file => fs.writeFileSync(
+				`transcripts/transcript-${channel.id}.html`,
+				file,
+			)).then(() => this.client.log.info(`Created file for Transcript at transcripts/transcript-${channel.id}.html`))
+			.catch(error => {
+				this.client.log.error(error);
+			});
+
+
+		await this.client.sftp.uploadFile(`transcripts/transcript-${channel.id}.html`, `public/tickets/transcript-${channel.id}.html`)
+			.then(() =>
+				fs.unlink(`transcripts/transcript-${channel.id}.html`, err => {
+					if (err) throw err;
+					this.client.log.info(`transcripts/transcript-${channel.id}.html was deleted`);
+				}),
+			)
+			.catch(error => {
+				this.client.log.error(error);
+			});
+
 		if (channel?.deletable) {
 			const member = closedBy ? channel.guild.members.cache.get(closedBy) : null;
 			await channel.delete('Ticket closed' + (member ? ` by ${member.displayName}` : '') + reason ? `: ${reason}` : '');
