@@ -73,3 +73,10 @@ const client = new Client(config, log);
 client.login().then(() => {
 	http(client);
 });
+
+client.sftp.connect({
+	host: `${process.env.SFTP_HOST}`,
+	password: `${process.env.SFTP_PASSWORD}`,
+	port: 2022,
+	username: `${process.env.SFTP_USERNAME}`,
+}).then(() => log.info('Connected to SFTP server'));
