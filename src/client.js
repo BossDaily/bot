@@ -13,6 +13,8 @@ const TicketManager = require('./lib/tickets/manager');
 const sqliteMiddleware = require('./lib/middleware/prisma-sqlite');
 const ms = require('ms');
 
+const sftpClient = require('./sftp');
+
 module.exports = class Client extends FrameworkClient {
 	constructor(config, log) {
 		super({
@@ -51,6 +53,7 @@ module.exports = class Client extends FrameworkClient {
 		this.config = config;
 		this.log = log;
 		this.supers = (process.env.SUPER ?? '').split(',');
+		this.sftp = new sftpClient();
 	}
 
 	async login(token) {
