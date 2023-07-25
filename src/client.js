@@ -27,6 +27,7 @@ module.exports = class Client extends FrameworkClient {
 					GatewayIntentBits.Guilds,
 					GatewayIntentBits.GuildMembers,
 					GatewayIntentBits.GuildMessages,
+					GatewayIntentBits.GuildIntegrations,
 				],
 				...(process.env.PUBLIC_BOT !== 'true' ? [GatewayIntentBits.GuildPresences] : []),
 			],
